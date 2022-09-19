@@ -2,8 +2,9 @@ package org.example.controller;
 
 import org.example.model.Book;
 import org.example.model.BookRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.example.model.UserBookHistory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +24,67 @@ public class BookController
         return bookRepository.findAll();
     }
 
-    //TODO: implement
+    @GetMapping("/books/{id}")
+    Book one(@PathVariable Long id)
+    {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new BookController.BookNotFoundException(id));
+    }
+
+    @GetMapping("/books/{id}/history")
+    List<UserBookHistory> all(@PathVariable Long id)
+    {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BookController.BookNotFoundException(id));
+
+        return book.getUserBookHistory();
+    }
+
+    @PostMapping("/books")
+    Book newBook(@RequestBody Book newUser)
+    {
+        return bookRepository.save(newUser);
+    }
+
+
+    @PutMapping("books/{id}")
+    Book replaceUser(@RequestBody Book newBook, @PathVariable Long id)
+    {
+        return bookRepository.findById(id)
+                .map(book ->
+                {
+                    book.setName(newBook.getName());
+                    book.setAuthor(newBook.getAuthor());
+                    book.setId(newBook.getId());
+                    book.setUserBookHistory(newBook.getUserBookHistory());
+                    return bookRepository.save(book);
+                })
+                .orElseGet(() ->
+                {
+                    newBook.setId(id);
+                    return bookRepository.save(newBook);
+                });
+    }
+
+    @DeleteMapping("/books/{id}")
+    void deleteBook(@PathVariable Long id)
+    {
+        bookRepository.deleteById(id);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(BookController.BookNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    String bookNotFoundException(BookController.BookNotFoundException ex)
+    {
+        return ex.getMessage();
+    }
+
+    static class BookNotFoundException extends RuntimeException
+    {
+        BookNotFoundException(Long id)
+        {
+            super("Could not find book " + id);
+        }
+    }
 }

@@ -3,6 +3,8 @@ package org.example.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -12,6 +14,9 @@ public class Book
     @GeneratedValue Long id;
     private String name;
     private String author;
+
+    @OneToMany
+    private List<UserBookHistory> userBookHistory;
 
     public Book()
     {
@@ -47,19 +52,29 @@ public class Book
         this.author = author;
     }
 
+    public List<UserBookHistory> getUserBookHistory()
+    {
+        return userBookHistory;
+    }
+
+    public void setUserBookHistory(List<UserBookHistory> userBookHistory)
+    {
+        this.userBookHistory = userBookHistory;
+    }
+
     @Override
     public boolean equals(Object o)
     {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return Objects.equals(id, book.id) && Objects.equals(name, book.name) && Objects.equals(author, book.author);
+        return Objects.equals(id, book.id) && Objects.equals(name, book.name) && Objects.equals(author, book.author) && Objects.equals(userBookHistory, book.userBookHistory);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, name, author);
+        return Objects.hash(id, name, author, userBookHistory);
     }
 
     @Override
@@ -69,6 +84,7 @@ public class Book
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", author='" + author + '\'' +
+                ", userBookHistory=" + userBookHistory +
                 '}';
     }
 }

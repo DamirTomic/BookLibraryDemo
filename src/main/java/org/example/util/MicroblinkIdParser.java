@@ -116,7 +116,7 @@ public class MicroblinkIdParser implements UserParser
         String dateOfBirth = parts[1].substring(0, 6);
         String dateOfBirthCheckDigit = parts[1].substring(6, 7);
         boolean isDoBValid = idValidityChecker.checkDoBValidity(dateOfBirth, dateOfBirthCheckDigit);
-                //TODTO: && checkCompositeValidity(...);
+                //TODO: && checkCompositeValidity(...);
         String lastName = parts[2].split("<<")[0];
         String[] firstNames = parts[2].split("<<")[1].split("<");
 

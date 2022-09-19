@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.model.BookRepository;
 import org.example.model.User;
 import org.example.model.UserRepository;
 import org.example.util.MicroblinkIdParser;
@@ -7,6 +8,7 @@ import org.example.util.UserParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +16,13 @@ import java.util.Map;
 public class UserController
 {
     private final UserRepository userRepository;
+    private final BookRepository bookRepository;
     private final UserParser parser = new MicroblinkIdParser();
 
-    public UserController(UserRepository userRepository)
+    public UserController(UserRepository userRepository, BookRepository bookRepository)
     {
         this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
     }
 
     @GetMapping("/users")
@@ -32,6 +36,18 @@ public class UserController
     {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+    @GetMapping("/users/late")
+    List<User> lateUsers()
+    {
+        List<User> lateUsers = new ArrayList<>();
+        bookRepository.findByLateFees().forEach(userBookHistory ->
+        {
+            userRepository.findById(userBookHistory.getUserId()).ifPresent(lateUsers::add);
+        });
+
+        return lateUsers;
     }
 
     @PostMapping("/users")
