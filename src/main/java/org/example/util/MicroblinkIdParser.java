@@ -17,9 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-/**
- *
- */
 public class MicroblinkIdParser implements UserParser
 {
     private static final Logger LOGGER = Logger.getLogger(MicroblinkIdParser.class.getName());
@@ -29,7 +26,7 @@ public class MicroblinkIdParser implements UserParser
     /***
      * fetches user data from the Microblink MRZ API
      * @param imageSource - URL of the image containing back side of the id
-     * @return
+     * @return creates a User object
      */
     public User getUserDetails(String imageSource)
     {
@@ -83,7 +80,6 @@ public class MicroblinkIdParser implements UserParser
                 response.append(inputLine);
             }
             in.close();
-            //System.out.println(response);
 
             return parseResponse(response.toString());
 
@@ -96,14 +92,14 @@ public class MicroblinkIdParser implements UserParser
 
     User parseResponse(String response)
     {
-        if(response == null)
+        if (response == null)
         {
             LOGGER.log(Level.WARNING, "invalid response");
             return null;
         }
 
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-        if(jsonObject != null)
+        if (jsonObject != null)
         {
             JsonObject mrzData = jsonObject.getAsJsonObject("result").getAsJsonObject("mrzData");
             String rawMrzString = mrzData.get("rawMrzString").getAsString();
@@ -115,18 +111,19 @@ public class MicroblinkIdParser implements UserParser
 
     private User parseRawMrz(String rawMrzString)
     {
-        String [] parts = rawMrzString.split("\n");
+        String[] parts = rawMrzString.split("\n");
 
-        String dateOfBirth = parts[1].substring(0,6);
-        String dateOfBirthCheckDigit = parts[1].substring(6,7);
+        String dateOfBirth = parts[1].substring(0, 6);
+        String dateOfBirthCheckDigit = parts[1].substring(6, 7);
         boolean isDoBValid = idValidityChecker.checkDoBValidity(dateOfBirth, dateOfBirthCheckDigit);
+                //TODTO: && checkCompositeValidity(...);
         String lastName = parts[2].split("<<")[0];
-        String [] firstNames = parts[2].split("<<")[1].split("<");
+        String[] firstNames = parts[2].split("<<")[1].split("<");
 
         StringJoiner firstNamejoiner = new StringJoiner(" ");
-        for(String name : firstNames)
+        for (String name : firstNames)
         {
-            if(!name.isEmpty())
+            if (!name.isEmpty())
             {
                 firstNamejoiner.add(name);
             }
@@ -136,8 +133,7 @@ public class MicroblinkIdParser implements UserParser
                 .setFirstName(firstNamejoiner.toString())
                 .setLastName(lastName)
                 .setDateOfBirth(dateOfBirth)
-                .setDoBValid(isDoBValid)
-                ;
+                .setDoBValid(isDoBValid);
     }
 
 }

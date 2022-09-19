@@ -25,4 +25,9 @@ public class IdValidityChecker
         }
         return (checkSum % 10);
     }
+
+    public boolean checkCompositeValidity(String data, String overallCheckDigit)
+    {
+        return true; //TODO: implement COMPOSITE (OVERALL) CHECK DIGITS from https://help.microblink.com/s/direct-article?Article=ka05e000001k4X9AAI#h_9e88fca7-3174-4c93-a34d-3603ff06f2e8
+    }
 }

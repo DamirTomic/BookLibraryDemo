@@ -1,14 +1,36 @@
 package org.example.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Objects;
 
+@Entity
+@Table(name = "users")
 public class User
 {
+    private @Id @GeneratedValue Long id;
     private String firstName;
     private String lastName;
     private String dateOfBirth;
-
     private boolean DoBValid;
+
+    public User()
+    {
+    }
+
+    public Long getId()
+    {
+        return id;
+    }
+
+    public User setId(Long id)
+    {
+        this.id = id;
+        return this;
+    }
+
     public String getFirstName()
     {
         return firstName;
@@ -59,20 +81,21 @@ public class User
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return DoBValid == user.DoBValid && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(dateOfBirth, user.dateOfBirth);
+        return DoBValid == user.DoBValid && Objects.equals(id, user.id) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(dateOfBirth, user.dateOfBirth);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(firstName, lastName, dateOfBirth, DoBValid);
+        return Objects.hash(id, firstName, lastName, dateOfBirth, DoBValid);
     }
 
     @Override
     public String toString()
     {
         return "User{" +
-                "firstName='" + firstName + '\'' +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", dateOfBirth='" + dateOfBirth + '\'' +
                 ", DoBValid=" + DoBValid +
